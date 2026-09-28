@@ -1,0 +1,71 @@
+#include <QApplication>
+#include <QWidget>
+#include <QLabel>
+#include <QPushButton>
+#include <QVBoxLayout>
+#include <QHBoxLayout>
+
+using Qt::AlignCenter;
+// ========================================================
+// TU DESAFÍO POO: PANEL DE ALARMA DE SEGURIDAD
+// ========================================================
+//
+// Requisitos:
+// 1. Crear una clase 'PanelAlarma' que herede de QWidget.
+// 2. En el constructor de PanelAlarma:
+//    - Título de ventana: "Control de Alarma"
+//    - Tamaño: 340 por 200
+//    - Un QLabel centrado para el estado: "Estado: DESACTIVADA"
+//    - Dos botones en horizontal (QHBoxLayout):
+//        * QPushButton *btnActivar = new QPushButton("Activar Alarma");
+//        * QPushButton *btnDesactivar = new QPushButton("Desactivar Alarma");
+//    - Un botón en la parte inferior para salir:
+//        * QPushButton *btnSalir = new QPushButton("Salir del Sistema");
+//    - Un QVBoxLayout principal para apilar: Estado -> Layout de Botones -> Botón Salir.
+//    - Asignar el layout con este->setLayout(layoutPrincipal) o setLayout(...).
+//    - Conectar btnSalir con qApp a &QApplication::quit.
+//
+// 3. En la función main():
+//    - Crear la QApplication app.
+//    - Crear una instancia de PanelAlarma.
+//    - Mostrarla y llamar a app.exec().
+// ========================================================
+class PanelAlarma : public QWidget{
+private:
+    QLabel *estado;
+    public:
+    PanelAlarma(QWidget *parent = nullptr) : QWidget(parent){
+        this->setWindowTitle("Control de Alarma");
+        this->resize(320, 200);
+        estado = new QLabel("Estado: DESACTIVADA");
+        estado->setAlignment(AlignCenter);
+        QPushButton *botonActivar = new QPushButton("Activar Alarma");
+        QPushButton *botonDesactivar = new QPushButton("Desactivar Alarma");
+        QPushButton *botonSalir = new QPushButton("Salir del Sistema");
+        QHBoxLayout *layoutHorizontales = new QHBoxLayout();
+        //Layout horizontales
+        layoutHorizontales->addWidget(botonActivar);
+        layoutHorizontales->addWidget(botonDesactivar);
+        QVBoxLayout *layoutPrincipal = new QVBoxLayout();
+        layoutPrincipal->addWidget(estado);
+        layoutPrincipal->addLayout(layoutHorizontales);
+        layoutPrincipal->addWidget(botonSalir);
+        this->setLayout(layoutPrincipal);
+        QObject::connect(botonActivar, &QPushButton::clicked, this, &PanelAlarma::activarAlarma);
+        QObject::connect(botonDesactivar, &QPushButton::clicked, this, &PanelAlarma::desactivarAlarma);
+        QObject::connect(botonSalir, &QPushButton::clicked, qApp, &QApplication::quit);
+    }
+    void activarAlarma(){
+        estado->setText("Estado: ACTIVADA");
+    }
+    void desactivarAlarma(){
+        estado->setText("Estado: DESACTIVADA");
+    }
+};
+
+int main(int argc, char *argv[]){
+    QApplication app(argc, argv);
+    PanelAlarma alarma;
+    alarma.show();
+    return app.exec();
+}
