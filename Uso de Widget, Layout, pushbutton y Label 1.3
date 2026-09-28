@@ -1,0 +1,19 @@
+int main(int argc, char *argv[]){
+    QApplication app(argc, argv);
+    QWidget ventana;
+    ventana.setWindowTitle("Caja Registradora - Ticket 001");
+    ventana.resize(300, 220);
+    QLabel *tienda = new QLabel("Supermercado el Barrio");
+    QLabel *articulos = new QLabel("3x Leche, 1x Pan, 2x Manzanas");
+    QLabel *total = new QLabel("TOTAL A PAGAR $12.50");
+    QPushButton *finalizar = new QPushButton ("Confirmar Pago y Salir");
+    QVBoxLayout *layout = new QVBoxLayout;
+    layout-> addWidget(tienda);
+    layout-> addWidget(articulos);
+    layout-> addWidget(total);
+    layout->addWidget(finalizar);
+    ventana.setLayout(layout);
+    QObject::connect(finalizar, &QPushButton::clicked, &app, &QApplication::quit);
+    ventana.show();
+    return app.exec();
+}
