@@ -1,0 +1,57 @@
+#include "mainwindow.h"
+#include <QPushButton>
+#include <QApplication>
+#include <QVBoxLayout>
+#include <QLabel>
+#include <QWidget>
+#include <QHBoxLayout>
+using Qt::AlignCenter;
+// ========================================================
+// EJERCICIO COTIDIANO 4: CONFIRMACIÓN DE COMPRA (2 BOTONES)
+// ========================================================
+//
+// Requisitos:
+// 1. Título de la ventana: "Confirmar Pedido"
+// 2. Tamaño de la ventana: 350 por 180
+// 3. Crear un QLabel centrado: "¿Desea procesar el pago de $12.50?"
+// 4. Crear los dos botones usando 'new':
+//    - QPushButton *btnCancelar = new QPushButton("Cancelar");
+//    - QPushButton *btnPagar = new QPushButton("Pagar");
+// 5. Crear el QHBoxLayout para colocar los botones de izquierda a derecha:
+//    - QHBoxLayout *layoutBotones = new QHBoxLayout();
+//    - layoutBotones->addWidget(btnCancelar);
+//    - layoutBotones->addWidget(btnPagar);
+// 6. Crear el QVBoxLayout principal para apilar todo de arriba a abajo:
+//    - QVBoxLayout *layoutPrincipal = new QVBoxLayout();
+//    - layoutPrincipal->addWidget(mensaje);
+//    - layoutPrincipal->addLayout(layoutBotones); // Agrega el layout horizontal dentro del vertical
+// 7. Asignar layoutPrincipal a la ventana.
+// 8. Conectar AMBOS botones para cerrar la app (&QApplication::quit).
+// 9. Mostrar la ventana y ejecutar app.exec().
+// ========================================================
+int main(int argc, char *argv[])
+{
+    QApplication app(argc, argv);
+    QWidget ventana;
+    ventana.setWindowTitle("Confirmar Pedido");
+    ventana.resize(350, 180);
+    QLabel *mensaje = new QLabel("¿Desea procesar el pago de $12.50?");
+    mensaje->setAlignment(AlignCenter);
+    QPushButton *btnCancelar = new QPushButton("Cancelar");
+    QPushButton *btnPagar = new QPushButton("Pagar");
+    QHBoxLayout *layoutBotones = new QHBoxLayout();
+    layoutBotones-> addWidget(btnCancelar);
+    layoutBotones-> addWidget(btnPagar);
+    QVBoxLayout *layoutPrincipal = new QVBoxLayout();
+    layoutPrincipal-> addWidget(mensaje);
+    layoutPrincipal-> addLayout(layoutBotones);
+    ventana.setLayout(layoutPrincipal);
+
+    // Conexión para el primer botón (Cancelar)
+    QObject::connect(btnCancelar, &QPushButton::clicked, &app, &QApplication::quit);
+
+    // Conexión para el segundo botón (Pagar)
+    QObject::connect(btnPagar, &QPushButton::clicked, &app, &QApplication::quit);
+    ventana.show();
+    return app.exec();
+}
