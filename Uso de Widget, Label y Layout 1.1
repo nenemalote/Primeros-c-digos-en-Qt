@@ -1,0 +1,31 @@
+#include <QApplication>
+#include <QWidget>
+#include <QLabel>
+#include <QPushButton>
+#include <QVBoxLayout>
+// ========================================================
+// DESAFÍO PRÁCTICO EN QT
+// ========================================================
+// 1. Título de la ventana: Debe decir "Mi Desafío Qt"
+// 2. Tamaño: La ventana debe medir 300 de ancho por 150 de alto
+// 3. Crear un QLabel que diga: "¡Bienvenido a mi práctica!"
+// 4. Crear un QPushButton que diga: "Salir del programa"
+// 5. Crear un QVBoxLayout y agregarle el QLabel y el QPushButton
+// 6. Asignar el layout a la ventana
+// 7. Conectar el botón para que al hacer clic se cierre la app
+// ========================================================
+int main(int argc, char *argv[]){
+    QApplication app(argc, argv);
+    QWidget ventana;
+    ventana.setWindowTitle("Mi desafio Qt");
+    ventana.resize(300, 150);
+    QLabel *texto = new QLabel("Bienvenido a mi practica!");
+    QPushButton *boton = new QPushButton("Salir del programa");
+    QVBoxLayout *layout = new QVBoxLayout();
+    layout->addWidget(texto);
+    layout-> addWidget(boton);
+    ventana.setLayout(layout);
+    QObject::connect(boton, &QPushButton::clicked, &app, &QApplication::quit);
+    ventana.show();
+    return app.exec();
+}
