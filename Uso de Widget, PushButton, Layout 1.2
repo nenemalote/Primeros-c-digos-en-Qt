@@ -1,0 +1,17 @@
+int main(int argc, char *argv[]){
+    QApplication app(argc, argv);
+    QWidget ventana;
+    ventana.setWindowTitle("Control de Clima - Sala");
+    ventana.resize(350, 200);
+    QLabel *titulo = new QLabel("Estado del Aire Acondicionado");
+    QLabel *temperatura = new QLabel("Temperatura actual: 22° C");
+    QPushButton *boton = new QPushButton("Apagar sistema");
+    QVBoxLayout *layout = new QVBoxLayout();
+    layout-> addWidget(titulo);
+    layout-> addWidget(temperatura);
+    layout-> addWidget(boton);
+    ventana.setLayout(layout);
+    QObject::connect(boton, &QPushButton::clicked, &app, &QApplication::quit);
+    ventana.show();
+    return app.exec();
+}
