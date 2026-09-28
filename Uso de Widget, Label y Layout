@@ -1,0 +1,21 @@
+#include <QApplication>
+#include <QWidget>
+#include <QLabel>
+#include <QPushButton>
+#include <QVBoxLayout>
+
+int main(int argc, char *argv[]) {
+    QApplication app(argc, argv);
+    QWidget ventana;
+    ventana.setWindowTitle("Mi primer programa con Widget, Label y Layout");
+    ventana.resize(400, 200);
+    QLabel *texto = new QLabel("Este es un texto independiente (QLabel)");
+    QPushButton *boton = new QPushButton("Cerrar aplicacion");
+    QVBoxLayout *layout = new QVBoxLayout();
+    layout-> addWidget(texto);
+    layout-> addWidget(boton);
+    ventana.setLayout(layout);
+    QObject::connect(boton, &QPushButton::clicked, &app, &QApplication::quit);
+    ventana.show();
+    return app.exec();
+}
