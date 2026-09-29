@@ -53,6 +53,7 @@ public:
         this->setWindowTitle("Nike Pegasos 40");
         this->resize(350, 230);
         lblKilometraje = new QLabel("Kilómetros: 0.0 / 800.0km");
+        lblKilometraje->setStyleSheet("color: #27ae60; font-size: 18px; font-weight: bold; margin-bottom: 10px;");
         lblKilometraje->setAlignment(AlignCenter);
         txtKmIngresados = new QLineEdit();
         txtKmIngresados->setPlaceholderText("Ingrese km recorridos (ej: 10.5)");
