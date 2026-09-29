@@ -1,0 +1,117 @@
+#include <QApplication>
+#include <QWidget>
+#include <QLabel>
+#include <QPushButton>
+#include <QVBoxLayout>
+#include <QHBoxLayout>
+#include <QLineEdit>
+using Qt::AlignCenter;
+
+// ========================================================
+// PROYECTO NUEVO: CONTROL DE KILOMETRAJE DE ZAPATILLAS
+// ========================================================
+//
+// Requisitos:
+// 1. Crear una clase 'ControlZapatillas' que herede de QWidget.
+//
+// 2. Variables miembro privadas (private):
+//    - QLabel *lblKilometraje;    // Mostrará los km acumulados
+//    - QLineEdit *txtKmIngresados; // Cuadro para escribir los km de la carrera
+//    - double kmAcumulados = 0;   // Kilometraje inicial en 0 km
+//    - double kmLimite = 800;     // Límite recomendado para cambiar de calzado
+//
+// 3. En el constructor de ControlZapatillas:
+//    - Título: "Runner Logbook - Nike Pegasus 40"
+//    - Tamaño: 350 por 230
+//    - Inicializar lblKilometraje con "Kilómetros: 0.0 / 800 km" centrados.
+//    - Darle estilo al texto de kilómetros (letra grande y verde).
+//    - Inicializar txtKmIngresados = new QLineEdit();
+//    - Texto de ayuda: txtKmIngresados->setPlaceholderText("Ingrese km recorridos");
+//    - Crear 2 botones: "Registrar Carrera" y "Reiniciar Zapatilla" en un QHBoxLayout.
+//    - Crear 1 botón "Salir" abajo.
+//    - Armar el QVBoxLayout principal.
+//    - Conectar los botones a sus respectivos métodos.
+//
+// 4. Métodos/Slots de la clase:
+//    - void registrarKm(): Lee el valor de txtKmIngresados, se lo suma a kmAcumulados,
+//      actualiza el lblKilometraje y limpia el cuadro de texto. Si llega a 800 km,
+//      cambia el texto a color rojo.
+//    - void reiniciar(): Vuelve kmAcumulados a 0 y restaura el texto a verde.
+//
+// 5. En el main():
+//    - Inicializar QApplication, instanciar ControlZapatillas, mostrar y ejecutar.
+// ========================================================
+
+class ControlZapatillas : public QWidget{
+private:
+    QLabel *lblKilometraje;
+    QLineEdit *txtKmIngresados;
+    double kmAcumulados = 0;
+    double kmLimite = 800;
+public:
+    ControlZapatillas(QWidget *parent = nullptr) : QWidget(parent){
+        this->setWindowTitle("Nike Pegasos 40");
+        this->resize(350, 230);
+        lblKilometraje = new QLabel("Kilómetros: 0.0 / 800.0km");
+        lblKilometraje->setAlignment(AlignCenter);
+        txtKmIngresados = new QLineEdit();
+        txtKmIngresados->setPlaceholderText("Ingrese km recorridos (ej: 10.5)");
+        txtKmIngresados->setStyleSheet("padding: 8px; font-size: 14px; border: 1px solid #ccc; border-radius: 4px;");
+
+        QPushButton *rgsCarrera = new QPushButton("Registrar Carrera");
+        QPushButton *rncCarrera = new QPushButton("Reiniciar Carrera");
+        rgsCarrera->setStyleSheet(
+            "background-color: #2ecc71; color: white; font-weight: bold; padding: 8px; border-radius: 5px;"
+            );
+        rncCarrera->setStyleSheet(
+            "background-color: #e67e22; color: white; font-weight: bold; padding: 8px; border-radius: 5px;"
+            );
+        QHBoxLayout *layoutLados = new QHBoxLayout();
+        layoutLados->addWidget(rgsCarrera);
+        layoutLados->addWidget(rncCarrera);
+        QPushButton *salir = new QPushButton("Salir");
+        salir->setStyleSheet(
+            "background-color: #e74c3c; color: white; font-weight: bold; padding: 8px; border-radius: 5px;"
+            );
+        QVBoxLayout *layoutPrincipal = new QVBoxLayout();
+        layoutPrincipal->addWidget(lblKilometraje);
+        layoutPrincipal->addWidget(txtKmIngresados);
+        layoutPrincipal->addLayout(layoutLados);
+        layoutPrincipal->addWidget(salir);
+        this->setLayout(layoutPrincipal);
+        //Crear botones de conexion
+        QObject::connect(rgsCarrera, &QPushButton::clicked, this, &ControlZapatillas::registrarKm);
+        QObject::connect(rncCarrera, &QPushButton::clicked, this, &ControlZapatillas::reiniciar);
+        QObject::connect(salir, &QPushButton::clicked, qApp, &QApplication::quit);
+    }
+    void registrarKm(){
+        double km = txtKmIngresados->text().toDouble();
+
+        if (km > 0) {
+            kmAcumulados += km;
+            txtKmIngresados->clear();
+
+            // Si supera el límite de 800 km, advertimos cambiando el texto a rojo
+            if (kmAcumulados >= kmLimite) {
+                lblKilometraje->setStyleSheet("color: #e74c3c; font-size: 18px; font-weight: bold; margin-bottom: 10px;");
+                lblKilometraje->setText("Kilómetros: " + QString::number(kmAcumulados, 'f', 1) + " / 800 km\n¡Cambiar Zapatilla!");
+            } else {
+                lblKilometraje->setText("Kilómetros: " + QString::number(kmAcumulados, 'f', 1) + " / 800 km");
+            }
+        }
+    }
+    void reiniciar() {
+        kmAcumulados = 0;
+        lblKilometraje->setStyleSheet("color: #27ae60; font-size: 18px; font-weight: bold; margin-bottom: 10px;");
+        lblKilometraje->setText("Kilómetros: 0.0 / 800 km");
+        txtKmIngresados->clear();
+    }
+
+};
+
+int main(int argc, char *argv[]){
+    QApplication app(argc, argv);
+    ControlZapatillas appRunner;
+    appRunner.show();
+    return app.exec();
+}
