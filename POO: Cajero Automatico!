@@ -1,0 +1,107 @@
+#include <QApplication>
+#include <QWidget>
+#include <QLabel>
+#include <QPushButton>
+#include <QVBoxLayout>
+#include <QHBoxLayout>
+#include <QLineEdit>
+using Qt::AlignCenter;
+// ========================================================
+// PROYECTO NUEVO: CAJERO AUTOMÁTICO (ATM)
+// ========================================================
+//
+// Requisitos:
+// 1. Crear una clase 'CajeroATM' que herede de QWidget.
+//
+// 2. Variables miembro privadas (private):
+//    - QLabel *lblSaldo;         // Mostrará el saldo actual
+//    - QLineEdit *txtMonto;       // Cuadro de texto para escribir cuánto ingresar/retirar
+//    - double saldoActual = 500;  // Saldo inicial de $500.00
+//
+// 3. En el constructor de CajeroATM:
+//    - Título: "Banco Digital - Cajero ATM"
+//    - Tamaño: 350 por 230
+//    - Inicializar lblSaldo con "Saldo: $500.00" y alineación centrada.
+//    - Darle estilo al saldo (ej: letra grande y verde).
+//    - Inicializar txtMonto = new QLineEdit();
+//    - Ponerle un texto de ayuda al cuadro: txtMonto->setPlaceholderText("Ingrese el monto");
+//    - Crear 2 botones: "Depositar" y "Retirar" en un QHBoxLayout.
+//    - Crear 1 botón "Salir" abajo.
+//    - Armar el QVBoxLayout principal (Saldo -> Cuadro de texto -> Botones -> Salir).
+//    - Conectar los botones "Depositar" y "Retirar" a sus respectivos métodos/slots.
+//    - Conectar el botón "Salir" a qApp con &QApplication::quit.
+//
+// 4. Métodos/Slots de la clase:
+//    - void depositar(): Toma el texto de txtMonto, lo convierte a número (txtMonto->text().toDouble()),
+//      se lo suma a saldoActual, actualiza el lblSaldo y limpia el cuadro de texto (txtMonto->clear()).
+//    - void retirar(): Similar a depositar, pero restando el monto a saldoActual.
+//
+// 5. En el main():
+//    - Inicializar QApplication, instanciar CajeroATM, mostrar y ejecutar.
+// ========================================================
+
+class CajeroATM : public QWidget{
+private:
+    QLabel *lblSaldo;
+    QLineEdit *txtMonto;
+    double saldoActual = 500;
+public:
+    CajeroATM(QWidget *parent = nullptr) : QWidget(parent){
+        this->setWindowTitle("Banco Digital - Cajero ATM");
+        this->resize(350, 250);
+        lblSaldo = new QLabel("Saldo: $500.00");
+        lblSaldo->setStyleSheet("color: #27ae60; font-size: 20px; font-weight: bold; margin-bottom: 10px;");
+        lblSaldo->setAlignment(AlignCenter);
+        txtMonto = new QLineEdit();
+        txtMonto->setPlaceholderText("Ingrese el monto: ");
+        txtMonto->setStyleSheet("padding: 8px; font-size: 14px; border: 1px solid #ccc; border-radius: 4px;");
+        QPushButton *depositar = new QPushButton("Depositar");
+        QPushButton *retirar = new QPushButton("Retirar");
+        QHBoxLayout *layoutLados = new QHBoxLayout();
+        // --- ESTILOS DE LOS BOTONES ---
+        depositar->setStyleSheet(
+            "background-color: #2ecc71; color: white; font-weight: bold; padding: 8px; border-radius: 5px;"
+            );
+        retirar->setStyleSheet(
+            "background-color: #e67e22; color: white; font-weight: bold; padding: 8px; border-radius: 5px;"
+            );
+        layoutLados->addWidget(depositar);
+        layoutLados->addWidget(retirar);
+        QPushButton *Salir = new QPushButton("Salir");
+        Salir->setStyleSheet(
+            "background-color: #e74c3c; color: white; font-weight: bold; padding: 8px; border-radius: 5px;"
+            );
+        QVBoxLayout *layoutPrincipal = new QVBoxLayout();
+        layoutPrincipal->addWidget(lblSaldo);
+        layoutPrincipal->addWidget(txtMonto);
+        layoutPrincipal->addLayout(layoutLados);
+        layoutPrincipal->addWidget(Salir);
+        this->setLayout(layoutPrincipal);
+        QObject::connect(depositar, &QPushButton::clicked, this, &CajeroATM::depositar);
+        QObject::connect(retirar, &QPushButton::clicked, this, &CajeroATM::Retirar);
+        QObject::connect(Salir, &QPushButton::clicked, qApp, &QApplication::quit);
+    }
+    void depositar(){
+        double monto = txtMonto->text().toDouble(); // Convierte el texto escrito a número
+        if (monto > 0) {
+            saldoActual += monto;
+            lblSaldo->setText("Saldo: $" + QString::number(saldoActual, 'f', 2));
+            txtMonto->clear();
+        }
+    }
+    void Retirar(){
+        double monto = txtMonto->text().toDouble();
+        if(monto > 0 && monto <= saldoActual){
+            saldoActual -=monto;
+            lblSaldo->setText("Saldo: $" + QString::number(saldoActual, 'f', 2));
+            txtMonto->clear();
+        }
+    }
+
+};
+int main(int argc, char *argv[]){
+    QApplication app(argc, argv);
+    CajeroATM cajero;
+    cajero.show();
+    return app.exec();
+}
