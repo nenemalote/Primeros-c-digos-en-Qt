@@ -1,0 +1,104 @@
+#include <QApplication>
+#include <QWidget>
+#include <QLabel>
+#include <QPushButton>
+#include <QVBoxLayout>
+#include <QHBoxLayout>
+#include <QLineEdit>
+#include <cmath> // Necesario para la función sqrt() (raíz cuadrada)
+
+using Qt::AlignCenter;
+
+// ========================================================
+// PROYECTO NUEVO: CALCULADORA DE FÓRMULA GENERAL (ax² + bx + c = 0)
+// ========================================================
+//
+// Requisitos:
+// 1. Crear la clase 'CalculadoraEcuacion' que herede de QWidget.
+//
+// 2. Variables miembro privadas:
+//    - QLineEdit *txtA, *txtB, *txtC; // Entradas para a, b y c
+//    - QLabel *lblResultado;          // Muestra x1 y x2 o si no tiene solución real
+//
+// 3. En el constructor:
+//    - Configurar título ("Fórmula General") y tamaño (350x250).
+//    - Crear las 3 cajas de texto con sus respectivos textos de ayuda.
+//    - Poner las cajas en un QHBoxLayout horizontal.
+//    - Crear los botones "Calcular" y "Salir".
+//    - Armar el layout principal y conectar los botones a los métodos.
+//
+// 4. Método/Slot 'calcular()':
+//    - Leer los valores a, b y c con .toDouble().
+//    - Validar que 'a' no sea 0 (ya que no se puede dividir entre cero).
+//    - Calcular el discriminante: (b*b - 4*a*c).
+//    - Si el discriminante es >= 0, calcular x1 y x2 y mostrarlos.
+//    - Si es < 0, mostrar que "No tiene raíces reales".
+// ========================================================
+
+
+class CalculadoraEcuacion : public QWidget{
+private:
+    QLineEdit *txtA, *txtB, *txtC;
+    QLabel *lblResultado;
+public:
+    CalculadoraEcuacion(QWidget *parent=nullptr) : QWidget(parent){
+        this->setWindowTitle("Fórmula General: ax² + bx + c = 0");
+        this->resize(350, 250);
+        lblResultado = new QLabel("Ingrese a, b, c");
+        lblResultado->setStyleSheet("color: #2c3e50; font-size: 16px; font-weight: bold; margin-bottom: 10px;");
+        lblResultado->setAlignment(AlignCenter);
+        txtA = new QLineEdit();
+        txtA->setPlaceholderText("a");
+        txtA->setStyleSheet("padding: 8px; font-size: 14px; border: 1px solid #ccc; border-radius: 4px;");
+        txtB = new QLineEdit();
+        txtB->setStyleSheet("padding: 8px; font-size: 14px; border: 1px solid #ccc; border-radius: 4px;");
+        txtC = new QLineEdit();
+        txtC->setPlaceholderText("c");
+        txtC->setStyleSheet("padding: 8px; font-size: 14px; border: 1px solid #ccc; border-radius: 4px;");
+        QHBoxLayout *layoutCajas = new QHBoxLayout();
+        layoutCajas->addWidget(txtA);
+        layoutCajas->addWidget(txtB);
+        layoutCajas->addWidget(txtC);
+        QPushButton *calcular = new QPushButton("Calcular 1x y 2x");
+        calcular->setStyleSheet("background-color: #3498db; color: white; font-weight: bold; padding: 8px; border-radius: 5px;");
+        QPushButton *salir = new QPushButton("Salir");
+        salir->setStyleSheet("background-color: #e74c3c; color: white; font-weight: bold; padding: 8px; border-radius: 5px;");
+        QVBoxLayout *layoutPrincipal = new QVBoxLayout();
+        layoutPrincipal->addWidget(lblResultado);
+        layoutPrincipal->addLayout(layoutCajas);
+        layoutPrincipal->addWidget(calcular);
+        layoutPrincipal->addWidget(salir);
+        this->setLayout(layoutPrincipal);
+        QObject::connect(calcular, &QPushButton::clicked, this, &CalculadoraEcuacion::calcular);
+        QObject::connect(salir, &QPushButton::clicked, qApp, &QApplication::quit);
+    }
+    void calcular(){
+        double a = txtA->text().toDouble();
+        double b = txtB->text().toDouble();
+        double c = txtC->text().toDouble();
+        if (a == 0) {
+            lblResultado->setStyleSheet("color: #e67e22; font-size: 15px; font-weight: bold;");
+            lblResultado->setText("El valor 'a' no puede ser 0");
+            return;
+        }
+        double discriminante = (b * b) - (4 * a * c);
+        if(discriminante>=0){
+            double x1 = (-b + std::sqrt(discriminante)) / (2 * a);
+            double x2 = (-b - std::sqrt(discriminante)) / (2 * a);
+
+            lblResultado->setStyleSheet("color: #27ae60; font-size: 16px; font-weight: bold;");
+            lblResultado->setText("x1 = " + QString::number(x1, 'f', 2) + "  |  x2 = " + QString::number(x2, 'f', 2));
+        }else {
+            // Sin solución en números reales
+            lblResultado->setStyleSheet("color: #e74c3c; font-size: 15px; font-weight: bold;");
+            lblResultado->setText("Sin soluciones reales (Δ < 0)");
+        }
+    }
+};
+
+int main(int argc, char *argv[]){
+    QApplication app(argc, argv);
+    CalculadoraEcuacion calc;
+    calc.show();
+    return app.exec();
+}
