@@ -1,0 +1,101 @@
+#include <QApplication>
+#include <QWidget>
+#include <QLabel>
+#include <QPushButton>
+#include <QVBoxLayout>
+#include <QHBoxLayout>
+#include <QLineEdit>
+using Qt::AlignCenter;
+// ========================================================
+// PROYECTO 2: CONVERTIDOR DE TEMPERATURA
+// ========================================================
+//
+// Requisitos:
+// 1. Crear la clase 'ConvertidorTemperatura' que herede de public QWidget.
+//
+// 2. Variables miembro privadas:
+//    - QLineEdit *txtValor;   // Entrada de la temperatura a convertir
+//    - QLabel *lblResultado;  // Muestra el resultado de la conversión
+//
+// 3. En el constructor:
+//    - Título: "Convertidor de Temperatura" (350x220).
+//    - 'lblResultado' centrado con texto inicial "Resultado: --".
+//    - Aplicarle estilos CSS a las entradas y etiquetas.
+//    - Crear 2 botones en un QHBoxLayout: "a Fahrenheit (ºF)" y "a Celsius (ºC)".
+//    - Crear 1 botón "Salir" abajo.
+//    - Armar el layout principal y asignarlo a la ventana.
+//    - Conectar el botón de Fahrenheit al slot 'aFahrenheit()'.
+//    - Conectar el botón de Celsius al slot 'aCelsius()'.
+//    - Conectar 'Salir' a qApp::quit.
+//
+// 4. Métodos/Slots:
+//    - void aFahrenheit(): F = (C * 9/5) + 32
+//    - void aCelsius():    C = (F - 32) * 5/9
+// ========================================================
+class ConvertidorTemperatura : public QWidget{
+private:
+    QLineEdit *txtValor;
+    QLabel *lblResultado;
+public:
+    ConvertidorTemperatura(QWidget *parent = nullptr) : QWidget(parent){
+        this->setWindowTitle("Convertidor de Temperatura");
+        this->resize(350, 220);
+        this->setStyleSheet("background-color: #f8f9fa;");
+        lblResultado = new QLabel("Resultado: --");
+        lblResultado->setStyleSheet(
+            "color: #2c3e50; font-size: 18px; font-weight: bold; "
+            "padding: 10px; background-color: #ecf0f1; border-radius: 6px;"
+            );
+        lblResultado->setAlignment(AlignCenter);
+        txtValor = new QLineEdit();
+        txtValor->setPlaceholderText("Ingrese la temperatura");
+        txtValor->setStyleSheet(
+            "padding: 10px; font-size: 14px; border: 2px solid #bdc3c7; "
+            "border-radius: 5px; background-color: #ffffff; color: #333333;"
+            );
+        QPushButton *fahr = new QPushButton(" a Fahrenheit (°F)");
+        fahr->setStyleSheet(
+            "background-color: #e67e22; color: white; font-size: 13px; font-weight: bold; "
+            "padding: 10px; border-radius: 5px;"
+            );
+        QPushButton *cels = new QPushButton("a Celcius (°C)");
+        cels->setStyleSheet(
+            "background-color: #3498db; color: white; font-size: 13px; font-weight: bold; "
+            "padding: 10px; border-radius: 5px;"
+            );
+        QHBoxLayout *layoutLados = new QHBoxLayout();
+        layoutLados->addWidget(fahr);
+        layoutLados->addWidget(cels);
+        QPushButton *salir = new QPushButton("Salir");
+        salir->setStyleSheet(
+            "background-color: #e74c3c; color: white; font-size: 13px; font-weight: bold; "
+            "padding: 9px; border-radius: 5px;"
+            );
+        QVBoxLayout *layoutPrincipal = new QVBoxLayout();
+        layoutPrincipal->addWidget(lblResultado);
+        layoutPrincipal->addWidget(txtValor);
+        layoutPrincipal->addLayout(layoutLados);
+        layoutPrincipal->addWidget(salir);
+        this->setLayout(layoutPrincipal);
+        QObject::connect(fahr, &QPushButton::clicked, this, &ConvertidorTemperatura::aFahrenheit);
+        QObject::connect(cels, &QPushButton::clicked, this, &ConvertidorTemperatura::aCelsius);
+        QObject::connect(salir, &QPushButton::clicked, qApp, &QApplication::quit);
+    }
+    void aFahrenheit() {
+        double valor = txtValor->text().toDouble();
+        double f = (valor * 9.0 / 5.0) + 32.0;
+        lblResultado->setText(QString::number(valor) + " °C = " + QString::number(f, 'f', 1) + " °F");
+    }
+    void aCelsius(){
+        double valor = txtValor->text().toDouble();
+        double c = (valor-32.0) * 5.0/9.0;
+        lblResultado->setText(QString::number(valor)+ " °C = " + QString::number(c, 'f', 1) + " °F");
+    }
+};
+
+int main(int argc, char *argv[]){
+    QApplication app(argc, argv);
+    ConvertidorTemperatura con;
+    con.show();
+    return app.exec();
+}
