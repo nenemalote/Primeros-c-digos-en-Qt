@@ -1,0 +1,104 @@
+#include <QApplication>
+#include <QWidget>
+#include <QLabel>
+#include <QPushButton>
+#include <QVBoxLayout>
+#include <QHBoxLayout>
+#include <QLineEdit>
+using Qt::AlignCenter;
+// ========================================================
+// PRÁCTICA DE C++ Y QT: 5 PROYECTOS NIVEL BÁSICO/INTERMEDIO
+// Librerías permitidas: QApplication, QWidget, QLabel,
+// QPushButton, QVBoxLayout, QHBoxLayout, QLineEdit
+// ========================================================
+
+
+// ========================================================
+// PROYECTO 1: CALCULADORA DE RITMO DE CARRERA (RUNNING)
+// ========================================================
+//
+// Requisitos:
+// 1. Crear la clase 'CalculadoraRitmo' que herede de public QWidget.
+//
+// 2. Variables miembro privadas:
+//    - QLineEdit *txtDistancia; // En kilómetros (ej: 10)
+//    - QLineEdit *txtTiempo;    // En minutos totales (ej: 50)
+//    - QLabel *lblResultado;    // Mostrará el ritmo promedio (min/km)
+//
+// 3. En el constructor:
+//    - Título: "Calculadora de Ritmo de Carrera" (350x230).
+//    - 'lblResultado' centrado con texto inicial "Ingrese datos".
+//    - 'txtDistancia' y 'txtTiempo' puestos lado a lado en un QHBoxLayout.
+//    - Botón "Calcular Ritmo" y botón "Salir".
+//    - Armar el layout principal e indicar this->setLayout().
+//    - Conectar los botones a sus slots.
+//
+// 4. Método 'calcular()':
+//    - Leer km = txtDistancia->text().toDouble() y min = txtTiempo->text().toDouble().
+//    - Validar que ambos valores sean > 0.
+//    - Calcular ritmo = min / km.
+//    - Mostrar en 'lblResultado': "Ritmo: X.XX min/km".
+// ========================================================
+
+
+class CalculadoraRitmo : public QWidget{
+private:
+    QLineEdit *txtDistancia;
+    QLineEdit *txtTiempo;
+    QLabel *lblResultado;
+public:
+    CalculadoraRitmo(QWidget *parent = nullptr) :QWidget(parent){
+        this->setWindowTitle("Calculadora de Ritmo de Carrera");
+        this->resize(350, 230);
+        lblResultado = new QLabel("Ingrese datos");
+        lblResultado->setStyleSheet(
+            "color: #2c3e50; font-size: 16px; font-weight: bold; margin-bottom: 8px;"
+            );
+        lblResultado->setAlignment(AlignCenter);
+        txtDistancia = new QLineEdit();
+        txtDistancia->setPlaceholderText("Ingrese distancia");
+        txtTiempo = new QLineEdit();
+        txtTiempo->setPlaceholderText("Ingrese tiempo");
+        QString estiloInput = "padding: 8px; font-size: 13px; border: 1px solid #bdc3c7; border-radius: 4px;";
+        txtDistancia->setStyleSheet(estiloInput);
+        txtTiempo->setStyleSheet(estiloInput);
+        QHBoxLayout *layousLados = new QHBoxLayout();
+        layousLados->addWidget(txtDistancia);
+        layousLados->addWidget(txtTiempo);
+        QPushButton *boton = new QPushButton("Calcular Ritmo");
+        boton->setStyleSheet(
+            "background-color: #2ecc71; color: white; font-size: 14px; font-weight: bold; "
+            "padding: 9px; border-radius: 5px;"
+            );
+        QPushButton *salir = new QPushButton("Salir");
+        salir->setStyleSheet(
+            "background-color: #e74c3c; color: white; font-size: 14px; font-weight: bold; "
+            "padding: 9px; border-radius: 5px;"
+            );
+        QVBoxLayout *layoutPrincipal = new QVBoxLayout();
+        layoutPrincipal->addWidget(lblResultado);
+        layoutPrincipal->addLayout(layousLados);
+        layoutPrincipal->addWidget(boton);
+        layoutPrincipal->addWidget(salir);
+        this->setLayout(layoutPrincipal);
+        QObject::connect(boton, &QPushButton::clicked, this, &CalculadoraRitmo::calcular);
+        QObject::connect(salir, &QPushButton::clicked, qApp, &QApplication::quit);
+    }
+    void calcular(){
+        double km = txtDistancia->text().toDouble();
+        double min = txtTiempo->text().toDouble();
+        if(km>0&&min>0){
+            double ritmo = min/km;
+            lblResultado->setText("Ritmo: " + QString::number(ritmo, 'f', 2) + " min/km");
+        }else{
+            lblResultado->setText("Ingrese valores mayores a 0");
+        }
+    }
+};
+
+int main(int argc, char *argv[]){
+    QApplication app(argc, argv);
+    CalculadoraRitmo cal;
+    cal.show();
+    return app.exec();
+}
