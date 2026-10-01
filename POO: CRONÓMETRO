@@ -1,0 +1,115 @@
+#include <QApplication>
+#include <QWidget>
+#include <QLabel>
+#include <QPushButton>
+#include <QVBoxLayout>
+#include <QHBoxLayout>
+#include <QTimer>
+
+using Qt::AlignCenter;
+
+// ========================================================
+// PROYECTO 4: CRONÓMETRO / TEMPORIZADOR SIMPLE
+// ========================================================
+//
+// Requisitos:
+// 1. Crear la clase 'Cronometro' que herede de public QWidget.
+//
+// 2. Variables miembro privadas:
+//    - QLabel *lblTiempo;        // Muestra el tiempo transcurrido
+//    - QTimer *timer;            // Objeto QTimer para emitir señales cada segundo
+//    - int segundos = 0;         // Acumulador de segundos
+//    - bool corriendo = false;   // Estado del cronómetro
+//
+// 3. En el constructor:
+//    - Título: "Cronómetro C++ / Qt" (350x240).
+//    - 'lblTiempo' centrado con texto inicial "0 seg" y estilo destacado.
+//    - Instanciar 'timer = new QTimer(this);'.
+//    - Crear 3 botones: "Iniciar / Pausar", "Reiniciar" y "Salir".
+//    - Aplicar estilos CSS diferenciados para cada control.
+//    - Organizar botones en un QHBoxLayout y armar el QVBoxLayout principal.
+//    - Conectar 'timer' (señal timeout) al slot 'actualizarTiempo()'.
+//    - Conectar botón "Iniciar / Pausar" al slot 'toggleCronometro()'.
+//    - Conectar botón "Reiniciar" al slot 'reiniciar()'.
+//    - Conectar botón "Salir" a qApp con &QApplication::quit.
+//
+// 4. Métodos / Slots de la clase:
+//    - void actualizarTiempo():
+//        * Incrementa 'segundos' en 1.
+//        * Muestra el valor actualizado en 'lblTiempo'.
+//    - void toggleCronometro():
+//        * Si está corriendo, llama a timer->stop() y cambia 'corriendo' a false.
+//        * Si no está corriendo, llama a timer->start(1000) (1000 ms = 1 seg) y cambia 'corriendo' a true.
+//    - void reiniciar():
+//        * Detiene el timer con timer->stop().
+//        * Resetea 'segundos = 0' y 'corriendo = false'.
+//        * Actualiza 'lblTiempo' a "0 seg".
+// ========================================================
+
+class Cronometro : public QWidget{
+private:
+    QLabel *lblTiempo;
+    QTimer *timer;
+    int segundos = 0;
+    bool corriendo = false;
+public:
+    Cronometro(QWidget *parent = nullptr) : QWidget(parent){
+        // Estilos CSS
+        QString btnAzul = "background-color: #3498db; color: white; font-size: 14px; font-weight: bold; padding: 9px; border-radius: 5px;";
+        QString btnVerde = "background-color: #2ecc71; color: white; font-size: 14px; font-weight: bold; padding: 9px; border-radius: 5px;";
+        QString btnNaranja = "background-color: #e67e22; color: white; font-size: 14px; font-weight: bold; padding: 9px; border-radius: 5px;";
+        QString btnRojo = "background-color: #e74c3c; color: white; font-size: 14px; font-weight: bold; padding: 9px; border-radius: 5px;";
+        this->setWindowTitle("Crónometro C++ / Qt");
+        this->resize(350, 240);
+        lblTiempo = new QLabel("0 seg");
+        lblTiempo->setAlignment(AlignCenter);
+        lblTiempo->setStyleSheet(btnAzul);
+        timer = new QTimer(this);
+        QPushButton *btnToggle = new QPushButton("Iniciar / Pausar");
+        btnToggle->setStyleSheet(btnVerde);
+        QPushButton *reiniciar = new QPushButton("Reiniciar");
+        reiniciar->setStyleSheet(btnNaranja);
+        QPushButton *salir = new QPushButton("Salir");
+        salir->setStyleSheet(btnRojo);
+        QHBoxLayout *layoutLados = new QHBoxLayout();
+        layoutLados->addWidget(btnToggle);
+        layoutLados->addWidget(reiniciar);
+        QVBoxLayout *layoutPrincipal = new QVBoxLayout();
+        layoutPrincipal->addWidget(lblTiempo);
+        layoutPrincipal->addLayout(layoutLados);
+        layoutPrincipal->addWidget(salir);
+        this->setLayout(layoutPrincipal);
+        QObject::connect(timer, &QTimer::timeout, this, &Cronometro::actualizarTiempo);
+        QObject::connect(btnToggle, &QPushButton::clicked, this, &Cronometro::toggleCronometro);
+        QObject::connect(reiniciar, &QPushButton::clicked, this, &Cronometro::reiniciar);
+        QObject::connect(salir, &QPushButton::clicked, qApp, &QApplication::quit);
+    }
+    void actualizarTiempo(){
+        segundos++;
+        lblTiempo->setText(QString::number(segundos) + " seg");
+    }
+    void toggleCronometro(){
+        if (corriendo) {
+            timer->stop();
+            corriendo = false;
+        } else {
+            timer->start(1000);
+            corriendo = true;
+        }
+
+    }
+    void reiniciar() {
+        timer->stop();
+        segundos = 0;
+        corriendo = false;
+        lblTiempo->setText("0 seg");
+    }
+};
+
+int main(int argc, char *argv[]){
+    QApplication app(argc, argv);
+    Cronometro crono;
+    crono.show();
+    return app.exec();
+
+}
