@@ -1,0 +1,120 @@
+#include <QApplication>
+#include <QWidget>
+#include <QLabel>
+#include <QPushButton>
+#include <QVBoxLayout>
+#include <QHBoxLayout>
+#include <QLineEdit>
+using Qt::AlignCenter;
+// ========================================================
+// PROYECTO 3: REGISTRO DE HORAS DE SUEÑO (SLEEP TRACKER)
+// ========================================================
+//
+// Requisitos:
+// 1. Crear la clase 'RegistroSueno' que herede de public QWidget.
+//
+// 2. Variables miembro privadas:
+//    - QLabel *lblTotalHoras;    // Muestra las horas acumuladas en la semana
+//    - QLineEdit *txtHorasHoy;   // Cuadro para ingresar horas de la noche anterior
+//    - double totalHoras = 0;    // Acumulador de horas semanales
+//
+// 3. En el constructor:
+//    - Título: "Tracker de Sueño Semanal" (350x240).
+//    - 'lblTotalHoras' centrado con texto inicial "Horas acumuladas: 0.0 hrs".
+//    - Aplicar estilos CSS con colores a las etiquetas, inputs y botones.
+//    - 'txtHorasHoy' con placeholder "Ingrese horas dormidas".
+//    - Crear 2 botones en un QHBoxLayout: "Registrar Noche" y "Reiniciar Semana".
+//    - Crear 1 botón "Salir" abajo.
+//    - Armar el layout principal y asignarlo a la ventana (this->setLayout).
+//    - Conectar "Registrar Noche" al slot 'registrar()'.
+//    - Conectar "Reiniciar Semana" al slot 'reiniciar()'.
+//    - Conectar "Salir" a qApp con &QApplication::quit.
+//
+// 4. Métodos/Slots de la clase:
+//    - void registrar():
+//        * Lee el texto de 'txtHorasHoy' y lo convierte a double.
+//        * Si el valor es > 0, se lo suma a 'totalHoras'.
+//        * Actualiza 'lblTotalHoras' mostrando "Horas acumuladas: X.X hrs".
+//        * Limpia el cuadro de texto usando txtHorasHoy->clear().
+//    - void reiniciar():
+//        * Resetea 'totalHoras' a 0.
+//        * Actualiza 'lblTotalHoras' al estado inicial "Horas acumuladas: 0.0 hrs".
+// ========================================================
+
+class RegistroSueno : public QWidget{
+private:
+    QLabel *lblTotalHoras;
+    QLineEdit *txtHorasHoy;
+    double totalHoras = 0;
+public:
+    RegistroSueno(QWidget *parent = nullptr) : QWidget(parent){
+
+        this->setWindowTitle("Tracker de Sueño Semanal");
+        this->resize(350, 240);
+        this->setStyleSheet("background-color: #2c3e50;");
+        QString btnVerde =
+            "background-color: #2ecc71; color: white; "
+            "font-size: 14px; font-weight: bold; "
+            "padding: 9px; border-radius: 5px;";
+
+        QString btnAzul =
+            "background-color: #3498db; color: white; "
+            "font-size: 14px; font-weight: bold; "
+            "padding: 9px; border-radius: 5px;";
+
+        QString btnNaranja =
+            "background-color: #e67e22; color: white; "
+            "font-size: 14px; font-weight: bold; "
+            "padding: 9px; border-radius: 5px;";
+
+        QString btnRojo =
+            "background-color: #e74c3c; color: white; "
+            "font-size: 14px; font-weight: bold; "
+            "padding: 9px; border-radius: 5px;";
+        
+
+        lblTotalHoras = new QLabel("Horas acumuladas: 0.0hrs");
+        lblTotalHoras->setAlignment(AlignCenter);
+        lblTotalHoras->setStyleSheet(btnAzul);
+        txtHorasHoy = new QLineEdit();
+        txtHorasHoy->setStyleSheet(btnNaranja);
+        txtHorasHoy->setPlaceholderText("Ingrese horas dormidas");
+        QPushButton *registarnoche = new QPushButton("Registrar Noche");
+        registarnoche->setStyleSheet(btnVerde);
+        QPushButton *reiniciarsemana = new QPushButton("Reiniciar Semana");
+        reiniciarsemana->setStyleSheet(btnAzul);
+        QHBoxLayout *layoutLados = new QHBoxLayout();
+        layoutLados->addWidget(registarnoche);
+        layoutLados->addWidget(reiniciarsemana);
+        QPushButton *salir = new QPushButton("Salir");
+        salir->setStyleSheet(btnRojo);
+        QVBoxLayout *layoutPrin = new QVBoxLayout();
+        layoutPrin->addWidget(lblTotalHoras);
+        layoutPrin->addWidget(txtHorasHoy);
+        layoutPrin->addLayout(layoutLados);
+        layoutPrin->addWidget(salir);
+        this->setLayout(layoutPrin);
+        QObject::connect(registarnoche, &QPushButton::clicked, this, &RegistroSueno::registrar);
+        QObject::connect(reiniciarsemana, &QPushButton::clicked, this, &RegistroSueno::reiniciar);
+        QObject::connect(salir, &QPushButton::clicked, qApp, &QApplication::quit);
+    }
+    void registrar(){
+        double horas = txtHorasHoy ->text().toDouble();
+        if(horas>0){
+            totalHoras=totalHoras+horas;
+            lblTotalHoras->setText("Horas acumuladas: " +QString::number(totalHoras)+ "hrs");
+            txtHorasHoy->clear();
+        }
+    }
+    void reiniciar(){
+        totalHoras = 0.0;
+        lblTotalHoras->setText("Horas acumuladas: 0.0 hrs");
+    }
+};
+
+int main(int argc, char *argv[]){
+    QApplication app(argc, argv);
+    RegistroSueno s;
+    s.show();
+    return app.exec();
+}
