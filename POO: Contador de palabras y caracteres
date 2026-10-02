@@ -1,0 +1,122 @@
+#include <QApplication>
+#include <QWidget>
+#include <QLabel>
+#include <QPushButton>
+#include <QVBoxLayout>
+#include <QHBoxLayout>
+#include <QTextEdit>
+#include <QRegularExpression>
+
+using Qt::AlignCenter;
+
+// ========================================================
+// PROYECTO 5: CONTADOR DE PALABRAS Y CARACTERES
+// ========================================================
+// PROYECTO 5: CONTADOR DE PALABRAS Y CARACTERES
+// ========================================================
+//
+// Requisitos:
+// 1. Crear la clase 'ContadorTexto' que herede de public QWidget.
+//
+// 2. Variables miembro privadas:
+//    - QTextEdit *txtArea;        // Área de texto multilínea
+//    - QLabel *lblContador;       // Muestra: "Palabras: X | Caracteres: Y"
+//
+// 3. En el constructor:
+//    - Título: "Contador de Palabras C++ / Qt" (400x300).
+//    - 'lblContador' centrado con texto inicial "Palabras: 0 | Caracteres: 0".
+//    - 'txtArea' con placeholder "Escriba o pegue su texto aquí...".
+//    - Crear 2 botones: "Limpiar" y "Salir".
+//    - Aplicar estilos CSS (fondo oscuro, botones coloreados, textarea claro).
+//    - Armar el layout principal (QVBoxLayout) añadiendo:
+//        * lblContador
+//        * txtArea
+//        * QHBoxLayout con los botones (Limpiar y Salir).
+//    - Conectar 'txtArea' (señal &QTextEdit::textChanged) al slot 'procesarTexto()'.
+//    - Conectar botón "Limpiar" al slot 'limpiar()'.
+//    - Conectar botón "Salir" a qApp con &QApplication::quit.
+//
+// 4. Métodos / Slots de la clase:
+//    - void procesarTexto():
+//        * Obtiene el texto con txtArea->toPlainText().
+//        * Cuenta caracteres con texto.length().
+//        * Para contar palabras: usa texto.split(QRegularExpression("\\s+"), Qt::SkipEmptyParts).count().
+//        * Actualiza 'lblContador' con la cadena formada.
+//    - void limpiar():
+//        * Limpia el editor con txtArea->clear().
+// ========================================================
+// ========================================================
+
+class ContadorTexto : public QWidget {
+private:
+    QTextEdit *txtArea;
+    QLabel *lblContador;
+
+public:
+    ContadorTexto(QWidget *parent = nullptr) : QWidget(parent) {
+        // Estilos CSS
+        QString btnAzul = "background-color: #3498db; color: white; font-size: 14px; font-weight: bold; padding: 9px; border-radius: 5px;";
+        QString btnNaranja = "background-color: #e67e22; color: white; font-size: 14px; font-weight: bold; padding: 9px; border-radius: 5px;";
+        QString btnRojo = "background-color: #e74c3c; color: white; font-size: 14px; font-weight: bold; padding: 9px; border-radius: 5px;";
+        QString estiloEdit = "background-color: #ffffff; color: #2c3e50; font-size: 14px; border-radius: 5px; padding: 8px;";
+
+        this->setWindowTitle("Contador de Palabras C++ / Qt");
+        this->resize(400, 300);
+        this->setStyleSheet("background-color: #2c3e50;");
+
+        lblContador = new QLabel("Palabras: 0 | Caracteres: 0");
+        lblContador->setAlignment(AlignCenter);
+        lblContador->setStyleSheet(btnAzul);
+
+        // Instanciamos el miembro privado asignándolo directamente (sin recrear la variable local)
+        txtArea = new QTextEdit();
+        txtArea->setPlaceholderText("Escriba o pegue su texto aquí...");
+        txtArea->setStyleSheet(estiloEdit);
+
+        QPushButton *limpiar = new QPushButton("Limpiar");
+        limpiar->setStyleSheet(btnNaranja);
+
+        QPushButton *salir = new QPushButton("Salir");
+        salir->setStyleSheet(btnRojo);
+
+        QHBoxLayout *layoutLados = new QHBoxLayout();
+        layoutLados->addWidget(limpiar);
+        layoutLados->addWidget(salir);
+
+        QVBoxLayout *layoutPrincipal = new QVBoxLayout();
+        layoutPrincipal->addWidget(lblContador);
+        layoutPrincipal->addWidget(txtArea);
+        layoutPrincipal->addLayout(layoutLados);
+
+        this->setLayout(layoutPrincipal);
+
+        // Conexiones de Signals y Slots
+        QObject::connect(txtArea, &QTextEdit::textChanged, this, &ContadorTexto::procesarTexto);
+        QObject::connect(limpiar, &QPushButton::clicked, this, &ContadorTexto::limpiarTextarea);
+        QObject::connect(salir, &QPushButton::clicked, qApp, &QApplication::quit);
+    }
+
+    void procesarTexto() {
+        QString texto = txtArea->toPlainText();
+        int caracteres = texto.length();
+
+        // Si el texto está vacío, evitamos que split cuente una palabra fantasma
+        int palabras = 0;
+        if (!texto.trimmed().isEmpty()) {
+            palabras = texto.split(QRegularExpression("\\s+"), Qt::SkipEmptyParts).count();
+        }
+
+        lblContador->setText("Palabras: " + QString::number(palabras) + " | Caracteres: " + QString::number(caracteres));
+    }
+
+    void limpiarTextarea() {
+        txtArea->clear();
+    }
+};
+
+int main(int argc, char *argv[]) {
+    QApplication app(argc, argv);
+    ContadorTexto ventana;
+    ventana.show();
+    return app.exec();
+}
